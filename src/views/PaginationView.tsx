@@ -25,7 +25,7 @@ const PaginationView = () => {
   const totalPages: number = data ? Math.ceil(data.count / PAGE_SIZE) : 0;
 
   return (
-    <div className="max-w-6xl mx-auto p-8">
+    <>
       {isLoading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {Array.from({ length: PAGE_SIZE }).map((_, i) => (
@@ -81,7 +81,7 @@ const PaginationView = () => {
       <p className="text-center text-xs text-gray-500">
         Page {page} of {totalPages} ({PAGE_SIZE} Pokémon shown)
       </p>
-    </div>
+    </>
   );
 };
 

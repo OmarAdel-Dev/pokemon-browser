@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import PaginationPage from "./pages/PokemonListPage";
+import PokemonListPage from "./pages/PokemonListPage";
 import PokemonDetailPage from "./pages/PokemonDetailPage";
 
 function Loader() {
@@ -20,12 +20,12 @@ function App() {
           path="/pokemonlist"
           element={
             <Suspense fallback={<Loader />}>
-              <PaginationPage />
+              <PokemonListPage />
             </Suspense>
           }
         />
         <Route
-          path="/pokemon/:id"
+          path="/pokemon/:name"
           element={
             <Suspense fallback={<Loader />}>
               <PokemonDetailPage />
