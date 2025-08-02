@@ -1,12 +1,15 @@
-import { Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Suspense } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import PaginationPage from './pages/PaginationPage';
-import LoadMorePage from './pages/LoadMorePage';
-import PokemonDetailPage from './pages/PokemonDetailPage';
+import PaginationPage from "./pages/PokemonListPage";
+import PokemonDetailPage from "./pages/PokemonDetailPage";
 
 function Loader() {
-  return <div className="flex justify-center items-center h-screen text-xl">Loading...</div>;
+  return (
+    <div className="flex justify-center items-center h-screen text-xl">
+      Loading...
+    </div>
+  );
 }
 
 function App() {
@@ -14,18 +17,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route
-          path="/pagination"
+          path="/pokemonlist"
           element={
             <Suspense fallback={<Loader />}>
               <PaginationPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/load-more"
-          element={
-            <Suspense fallback={<Loader />}>
-              <LoadMorePage />
             </Suspense>
           }
         />
@@ -37,7 +32,7 @@ function App() {
             </Suspense>
           }
         />
-        <Route path="*" element={<Navigate to="/pagination" />} />
+        <Route path="*" element={<Navigate to="/pokemonlist" />} />
       </Routes>
     </BrowserRouter>
   );
