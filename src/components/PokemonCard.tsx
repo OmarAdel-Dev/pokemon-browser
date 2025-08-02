@@ -15,7 +15,7 @@ function PokemonCard({ name, id, spriteUrl }: PokemonCardProps) {
          shadow-md hover:shadow-lg hover:-translate-y-1 transition
         p-6 group cursor-pointer border border-gray-100
       "
-      style={{ minHeight: 180, minWidth: 145 }}
+      style={{ minHeight: 180 }}
       data-testid="pokemon-card"
     >
       {spriteUrl ? (

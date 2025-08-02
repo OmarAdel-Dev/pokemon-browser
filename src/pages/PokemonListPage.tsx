@@ -44,7 +44,7 @@ const PokemonListPage = () => {
           </button>
         </div>
 
-        <div className="max-w-6xl mx-auto p-8">
+        <div className="max-w-6xl mx-auto p-4">
           {mode === "pagination" ? <PaginationView /> : <LoadMoreView />}
         </div>
       </div>
