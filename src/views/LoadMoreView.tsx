@@ -27,19 +27,20 @@ const LoadMoreView: React.FC = () => {
   useEffect(() => {
     if (
       !isLoading &&
-      pokemonDetails.every((q) => q.isSuccess) &&
-      pokemonDetails.length
+      pokemonDetails.length > 0 &&
+      pokemonDetails.every((q) => q.isSuccess)
     ) {
       const newPageData = pokemonDetails.map((q) => q.data!) as PokemonDetail[];
       setLoadedPokemons((prev) => {
-        // Ensure no duplicates (in case user scrolls up and down quickly)
         const prevNames = new Set(prev.map((p) => p.name));
         const filteredNew = newPageData.filter((p) => !prevNames.has(p.name));
+        if (filteredNew.length === 0) return prev;
         return [...prev, ...filteredNew];
       });
       setHasMore(Boolean(data?.next));
     }
-  }, [pokemonDetails, isLoading, data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pokemonDetails.length, isLoading, data?.next]);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
 
@@ -55,9 +56,11 @@ const LoadMoreView: React.FC = () => {
 
   useEffect(() => {
     const option = { root: null, rootMargin: "0px", threshold: 0.1 };
-    const observer = new window.IntersectionObserver(handleObserver, option);
+    const observer = new IntersectionObserver(handleObserver, option);
     if (observerRef.current) observer.observe(observerRef.current);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, [handleObserver]);
 
   return (
