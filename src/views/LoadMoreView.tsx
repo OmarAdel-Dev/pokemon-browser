@@ -20,13 +20,14 @@ const LoadMoreView: React.FC = () => {
       data?.results.map((pokemon) => ({
         queryKey: ["pokemonDetail", pokemon.name],
         queryFn: () => fetchPokemonDetail(pokemon.name),
-        staleTime: 5 * 60 * 1000,
+        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
       })) ?? [],
   });
 
   useEffect(() => {
     if (
       !isLoading &&
+      data &&
       pokemonDetails.length > 0 &&
       pokemonDetails.every((q) => q.isSuccess)
     ) {
@@ -37,10 +38,9 @@ const LoadMoreView: React.FC = () => {
         if (filteredNew.length === 0) return prev;
         return [...prev, ...filteredNew];
       });
-      setHasMore(Boolean(data?.next));
+      setHasMore(!!data.next);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pokemonDetails.length, isLoading, data?.next]);
+  }, [pokemonDetails, isLoading, data]);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
 
@@ -48,17 +48,28 @@ const LoadMoreView: React.FC = () => {
     (entries: IntersectionObserverEntry[]) => {
       const target = entries[0];
       if (target.isIntersecting && hasMore && !isLoading) {
-        setPage((p) => p + 1);
+        setPage((prevPage) => prevPage + 1);
       }
     },
     [hasMore, isLoading]
   );
 
   useEffect(() => {
-    const option = { root: null, rootMargin: "0px", threshold: 0.1 };
-    const observer = new IntersectionObserver(handleObserver, option);
-    if (observerRef.current) observer.observe(observerRef.current);
+    const element = observerRef.current;
+    if (!element) return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: "150px",
+      threshold: 0.1,
+    };
+    const observer = new IntersectionObserver(handleObserver, observerOptions);
+
+    observer.observe(element);
+
+    // Cleanup on unmount or ref change
     return () => {
+      observer.unobserve(element);
       observer.disconnect();
     };
   }, [handleObserver]);
@@ -74,6 +85,7 @@ const LoadMoreView: React.FC = () => {
             spriteUrl={poke.sprites.front_default}
           />
         ))}
+
         {(isLoading || pokemonDetails.some((q) => q.isLoading)) &&
           Array.from({ length: PAGE_SIZE }).map((_, i) => (
             <div
@@ -87,12 +99,16 @@ const LoadMoreView: React.FC = () => {
           ))}
       </div>
 
-      {/* Invisible anchor for the Intersection Observer (infinite scroll trigger) */}
-      <div ref={observerRef} />
+      {/* Anchor element for Intersection Observer */}
+      <div
+        ref={observerRef}
+        style={{ height: "1px", marginTop: "24px", visibility: "hidden" }}
+      />
 
+      {/* Loading indicator */}
       {(isLoading || pokemonDetails.some((q) => q.isLoading)) && (
         <div className="flex justify-center items-center mt-3">
-          <Spinner />{" "}
+          <Spinner />
           <span className="ml-2 text-xs text-gray-500">
             Loading more Pokémon...
           </span>
